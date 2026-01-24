@@ -1,0 +1,8 @@
+{
+  "name": "EcoGestion Préscolaire",
+  "description": "Une plateforme de gestion complète pour la direction d'écoles maternelles, permettant de piloter 48 enseignantes, les classes, et la communication pédagogique assistée par l'IA.",
+  "requestFramePermissions": [
+    "camera",
+    "microphone"
+  ]
+}
