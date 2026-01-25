@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell, PieChart, Pie } from 'recharts';
 import * as LucideIcons from 'lucide-react';
 import { MOCK_TEACHERS } from '../constants';
@@ -46,8 +46,15 @@ const StatCard = ({ title, value, icon, color, trend }: { title: string, value: 
 };
 
 const Dashboard: React.FC = () => {
+  const [presentToday, setPresentToday] = useState(MOCK_TEACHERS.length);
   const totalStudents = MOCK_TEACHERS.reduce((acc, t) => acc + t.studentsCount, 0);
-  const presentTeachers = MOCK_TEACHERS.filter(t => t.status === 'present').length;
+
+  useEffect(() => {
+    const saved = localStorage.getItem('today_present_teachers');
+    if (saved) {
+      setPresentToday(parseInt(saved));
+    }
+  }, []);
 
   return (
     <div className="space-y-10 animate-in pb-12">
@@ -59,26 +66,27 @@ const Dashboard: React.FC = () => {
           <p className="text-slate-500 dark:text-slate-400 mt-2 text-lg font-medium">أهلاً بك في غرفة القيادة. إليك ملخص أداء المؤسسة اليوم.</p>
         </div>
         <div className="flex gap-4">
-          <button className="px-6 py-3 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl text-sm font-bold shadow-sm hover:bg-slate-50 transition-all">
-            تقرير الأمس
-          </button>
-          <button className="px-6 py-3 bg-indigo-600 text-white rounded-2xl text-sm font-bold shadow-lg shadow-indigo-100 dark:shadow-none hover:bg-indigo-700 transition-all">
-            تحديث البيانات
-          </button>
+          <div className="bg-emerald-500/10 border border-emerald-500/20 px-4 py-3 rounded-2xl flex items-center gap-3">
+             <LucideIcons.Bus className="text-emerald-500" size={20} />
+             <div>
+                <p className="text-[9px] font-black text-emerald-600 uppercase">حالة النقل</p>
+                <p className="text-xs font-bold text-slate-700 dark:text-slate-300">8 حافلات في المسار</p>
+             </div>
+          </div>
         </div>
       </header>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <StatCard title="المعلمات المتواجدات" value={`${presentTeachers}/48`} icon="Users" color="text-indigo-600" trend="+4%" />
+        <StatCard title="المعلمات المتواجدات" value={`${presentToday}/48`} icon="Users" color="text-indigo-600" trend="+4%" />
         <StatCard title="إجمالي الأطفال" value={totalStudents} icon="Baby" color="text-amber-500" trend="+2%" />
         <StatCard title="غيابات الأطفال" value="24" icon="AlertCircle" color="text-rose-500" trend="-1.2%" />
-        <StatCard title="رسائل معالجة (IA)" value="12" icon="Sparkles" color="text-emerald-500" trend="+15%" />
+        <StatCard title="أطفال النقل" value="340" icon="Bus" color="text-emerald-500" trend="+5%" />
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        <div className="lg:col-span-2 bg-white dark:bg-slate-900 p-10 rounded-[2.5rem] border border-slate-200 dark:border-slate-800 shadow-sm">
-          <div className="flex items-center justify-between mb-10">
-            <div>
+        <div className="lg:col-span-2 space-y-8">
+          <div className="bg-white dark:bg-slate-900 p-10 rounded-[2.5rem] border border-slate-200 dark:border-slate-800 shadow-sm">
+            <div className="flex items-center justify-between mb-10">
               <h3 className="text-xl font-black flex items-center gap-3 text-slate-900 dark:text-slate-100 font-display">
                 <div className="p-2 bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600 rounded-lg">
                   <LucideIcons.BarChart3 size={20} />
@@ -86,72 +94,68 @@ const Dashboard: React.FC = () => {
                 إحصائيات الحضور الأسبوعية
               </h3>
             </div>
+            <div className="h-72">
+              <ResponsiveContainer width="100%" height="100%">
+                <AreaChart data={dataAbsences}>
+                  <defs>
+                    <linearGradient id="colorAbs" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="#6366f1" stopOpacity={0.2}/>
+                      <stop offset="95%" stopColor="#6366f1" stopOpacity={0}/>
+                    </linearGradient>
+                  </defs>
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" className="dark:opacity-10" />
+                  <XAxis dataKey="name" axisLine={false} tickLine={false} style={{ fontSize: '12px', fontWeight: 'bold', fill: '#94a3b8' }} dy={10} />
+                  <YAxis axisLine={false} tickLine={false} orientation="right" style={{ fontSize: '12px', fontWeight: 'bold', fill: '#94a3b8' }} dx={10} />
+                  <Tooltip 
+                    contentStyle={{ borderRadius: '16px', border: 'none', boxShadow: '0 10px 25px rgba(0,0,0,0.1)', padding: '12px', backgroundColor: '#fff', color: '#000' }} 
+                  />
+                  <Area type="monotone" dataKey="absences" stroke="#6366f1" strokeWidth={4} fillOpacity={1} fill="url(#colorAbs)" />
+                </AreaChart>
+              </ResponsiveContainer>
+            </div>
           </div>
-          <div className="h-72">
-            <ResponsiveContainer width="100%" height="100%">
-              <AreaChart data={dataAbsences}>
-                <defs>
-                  <linearGradient id="colorAbs" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#6366f1" stopOpacity={0.2}/>
-                    <stop offset="95%" stopColor="#6366f1" stopOpacity={0}/>
-                  </linearGradient>
-                </defs>
-                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" className="dark:opacity-10" />
-                <XAxis dataKey="name" axisLine={false} tickLine={false} style={{ fontSize: '12px', fontWeight: 'bold', fill: '#94a3b8' }} dy={10} />
-                <YAxis axisLine={false} tickLine={false} orientation="right" style={{ fontSize: '12px', fontWeight: 'bold', fill: '#94a3b8' }} dx={10} />
-                <Tooltip 
-                  contentStyle={{ borderRadius: '16px', border: 'none', boxShadow: '0 10px 25px rgba(0,0,0,0.1)', padding: '12px', backgroundColor: '#fff', color: '#000' }} 
-                />
-                <Area type="monotone" dataKey="absences" stroke="#6366f1" strokeWidth={4} fillOpacity={1} fill="url(#colorAbs)" />
-              </AreaChart>
-            </ResponsiveContainer>
+
+          <div className="bg-gradient-to-r from-amber-500 to-amber-600 p-8 rounded-[2.5rem] text-white flex items-center justify-between shadow-xl relative overflow-hidden group">
+             <LucideIcons.Utensils className="absolute -bottom-4 -left-4 w-32 h-32 text-white/10 group-hover:scale-110 transition-transform" />
+             <div className="relative z-10">
+                <h4 className="text-[10px] font-black uppercase tracking-widest opacity-80 mb-1">غداء اليوم</h4>
+                <p className="text-2xl font-black font-display">كسكس مغربي بالخضر والدجاج</p>
+                <div className="flex gap-4 mt-3">
+                   <span className="text-[10px] font-bold bg-white/20 px-3 py-1 rounded-full flex items-center gap-1"><LucideIcons.Check size={12}/> متوازن</span>
+                   <span className="text-[10px] font-bold bg-white/20 px-3 py-1 rounded-full flex items-center gap-1"><LucideIcons.AlertCircle size={12}/> انتباه للحساسية</span>
+                </div>
+             </div>
+             <button className="relative z-10 p-4 bg-white/20 hover:bg-white/30 rounded-2xl transition-all">
+                <LucideIcons.ChevronLeft size={24} />
+             </button>
           </div>
         </div>
 
-        <div className="bg-white dark:bg-slate-900 p-10 rounded-[2.5rem] border border-slate-200 dark:border-slate-800 shadow-sm">
+        <div className="bg-white dark:bg-slate-900 p-10 rounded-[2.5rem] border border-slate-200 dark:border-slate-800 shadow-sm flex flex-col h-full">
           <h3 className="text-xl font-black mb-8 flex items-center gap-3 text-slate-900 dark:text-slate-100 font-display">
              <div className="p-2 bg-amber-50 dark:bg-amber-900/20 text-amber-500 rounded-lg">
-                <LucideIcons.PieChart size={20} />
+                <LucideIcons.Camera size={20} />
              </div>
-             كثافة الأقسام
+             آخر اللحظات
           </h3>
-          <div className="h-60 flex flex-col items-center justify-center relative">
-            <ResponsiveContainer width="100%" height="100%">
-              <PieChart>
-                <Pie
-                  data={sectionData}
-                  cx="50%"
-                  cy="50%"
-                  innerRadius={70}
-                  outerRadius={90}
-                  paddingAngle={8}
-                  dataKey="value"
-                  stroke="none"
-                  cornerRadius={10}
-                >
-                  {sectionData.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={entry.color} />
-                  ))}
-                </Pie>
-                <Tooltip />
-              </PieChart>
-            </ResponsiveContainer>
-            <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-                <span className="text-2xl font-black text-slate-900 dark:text-white">48</span>
-                <span className="text-[10px] font-bold text-slate-400 uppercase">مربية</span>
-            </div>
+          <div className="space-y-6 flex-1 overflow-y-auto pr-2 scrollbar-hide">
+            {[1, 2, 3].map(i => (
+              <div key={i} className="flex gap-4 group cursor-pointer">
+                 <img src={`https://picsum.photos/seed/moment${i}/100/100`} className="w-16 h-16 rounded-2xl object-cover shadow-sm group-hover:scale-105 transition-transform" alt="" />
+                 <div className="flex-1 overflow-hidden">
+                    <p className="text-xs font-black text-slate-800 dark:text-slate-200 truncate">نشاط تربوي جديد</p>
+                    <p className="text-[10px] text-slate-400 font-bold mb-2">القاعة A{i} • منذ {i} س</p>
+                    <div className="flex gap-1">
+                       <span className="w-2 h-2 rounded-full bg-emerald-500"></span>
+                       <span className="w-2 h-2 rounded-full bg-slate-200 dark:bg-slate-700"></span>
+                    </div>
+                 </div>
+              </div>
+            ))}
           </div>
-          <div className="mt-8 grid grid-cols-2 gap-3">
-              {sectionData.map((s) => (
-                <div key={s.name} className="flex flex-col p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/40 border border-slate-100 dark:border-slate-800">
-                  <div className="flex items-center gap-2 mb-1">
-                    <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: s.color }}></div>
-                    <span className="text-xs font-bold text-slate-500 truncate">{s.name}</span>
-                  </div>
-                  <span className="text-lg font-black text-slate-900 dark:text-slate-100">{s.value}</span>
-                </div>
-              ))}
-          </div>
+          <button className="mt-8 w-full py-4 bg-slate-50 dark:bg-slate-800 rounded-2xl text-[10px] font-black uppercase tracking-widest text-indigo-600 hover:bg-indigo-600 hover:text-white transition-all">
+            فتح المجلة الكاملة
+          </button>
         </div>
       </div>
     </div>

@@ -18,15 +18,14 @@ export const MOCK_TEACHERS: Teacher[] = Array.from({ length: 48 }).map((_, i) =>
     classRoom: `القاعة ${String.fromCharCode(65 + (i % 8))}${Math.floor(i / 8) + 1}`,
     email: `teacher${i + 1}@ecole.ma`,
     phone: `06 12 34 56 ${String(i).padStart(2, '0')}`,
-    studentsCount: 20 + (i % 5), // عدد أطفال محدد لكل معلمة
+    studentsCount: 20 + (i % 5),
     avatar: `https://picsum.photos/seed/${i + 100}/100/100`,
-    status: i === 5 || i === 12 ? 'absent' : i === 20 ? 'formation' : 'present',
+    status: 'present',
     monthlySalary: baseSalary,
     paidAmount: isFullyPaid ? baseSalary : isPartiallyPaid ? baseSalary / 2 : 0
   };
 });
 
-// توليد التلاميذ بشكل يضمن أن كل تلميذ ينتمي لمعلمة محددة
 export const MOCK_STUDENTS: Student[] = [];
 MOCK_TEACHERS.forEach(teacher => {
   for (let j = 0; j < teacher.studentsCount; j++) {
@@ -49,7 +48,7 @@ MOCK_TEACHERS.forEach(teacher => {
       parentEmail: `parent.${lastName.toLowerCase()}@email.com`,
       address: `حي الأمل، زنقة ${studentIdx + 10}، الدار البيضاء`,
       className: teacher.classRoom,
-      teacherId: teacher.id, // الربط الجديد
+      teacherId: teacher.id,
       teacherName: teacher.name
     });
   }
@@ -57,8 +56,14 @@ MOCK_TEACHERS.forEach(teacher => {
 
 export const SCHOOL_NAV_ITEMS = [
   { id: 'dashboard', label: 'لوحة التحكم', icon: 'LayoutDashboard' },
+  { id: 'attendance', label: 'تسجيل الحضور', icon: 'UserCheck' },
+  { id: 'journal', label: 'مجلة الأنشطة', icon: 'Camera' },
+  { id: 'meals', label: 'التغذية والوجبات', icon: 'Utensils' },
+  { id: 'performance', label: 'تقييم الأداء', icon: 'Trophy' }, // إضافة جديدة
   { id: 'teachers', label: 'المعلمات (48)', icon: 'Users' },
   { id: 'students', label: 'لائحة الأطفال', icon: 'Baby' },
+  { id: 'transport', label: 'النقل المدرسي', icon: 'Bus' },
+  { id: 'inventory', label: 'المخزون واللوازم', icon: 'Package' },
   { id: 'assessment-grid', label: 'شبكة التقييم التربوي', icon: 'ClipboardCheck' },
   { id: 'finance', label: 'التسيير المالي', icon: 'Wallet' },
   { id: 'messages', label: 'المراسلات', icon: 'MessageSquareText' },
