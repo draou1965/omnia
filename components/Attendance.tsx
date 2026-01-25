@@ -41,7 +41,8 @@ const Attendance: React.FC = () => {
   const saveAttendance = () => {
     localStorage.setItem(`attendance_${selectedDate}`, JSON.stringify(records));
     // تحديث الحالة في لوحة التحكم (محاكاة)
-    const presentCount = Object.values(records).filter(r => r.status === 'present' || r.status === 'late').length;
+    // Fix: Cast Object.values result to AttendanceRecord[] to fix property 'status' does not exist on type 'unknown' error
+    const presentCount = (Object.values(records) as AttendanceRecord[]).filter(r => r.status === 'present' || r.status === 'late').length;
     localStorage.setItem('today_present_teachers', presentCount.toString());
     alert('تم حفظ سجل الحضور بنجاح');
   };
@@ -60,7 +61,8 @@ const Attendance: React.FC = () => {
   );
 
   const stats = useMemo(() => {
-    const vals = Object.values(records);
+    // Fix: Cast Object.values result to AttendanceRecord[] to fix property 'status' does not exist on type 'unknown' error
+    const vals = Object.values(records) as AttendanceRecord[];
     return {
       present: vals.filter(v => v.status === 'present').length,
       absent: vals.filter(v => v.status === 'absent').length,
@@ -179,7 +181,6 @@ const Attendance: React.FC = () => {
             </thead>
             <tbody className="divide-y divide-slate-50 dark:divide-slate-800/50">
               {filteredTeachers.map((teacher) => {
-                // Fix: Safely accessing records and using optional chaining to avoid property access errors
                 const record = records[teacher.id];
                 const status = record?.status || 'present';
                 return (
@@ -217,7 +218,6 @@ const Attendance: React.FC = () => {
                       </div>
                     </td>
                     <td className="px-8 py-4">
-                      {/* Fix: Accessing note safely with optional chaining and ensuring valid object structure in onChange */}
                       <input 
                         type="text" 
                         placeholder="..."
