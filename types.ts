@@ -44,16 +44,9 @@ export interface Student {
   parentEmail: string;
   address: string;
   className: string;
-  teacherId: string; // تم إضافة هذا الربط
+  teacherId: string;
   teacherName: string;
   assessments?: CompetencyAssessment;
-}
-
-export interface SchoolStats {
-  totalStudents: number;
-  totalTeachers: number;
-  presentToday: number;
-  pendingReports: number;
 }
 
 export interface Message {
@@ -61,6 +54,7 @@ export interface Message {
   role: 'user' | 'assistant';
   content: string;
   timestamp: Date;
+  status?: 'sent' | 'delivered' | 'read';
 }
 
 export interface PrivateMessage {

@@ -1,9 +1,8 @@
 
 import React, { useState, useEffect } from 'react';
-import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell, PieChart, Pie } from 'recharts';
+import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import * as LucideIcons from 'lucide-react';
 import { MOCK_TEACHERS } from '../constants';
-import { Section } from '../types';
 
 const dataAbsences = [
   { name: 'الاثنين', absences: 2 },
@@ -11,13 +10,6 @@ const dataAbsences = [
   { name: 'الأربعاء', absences: 0 },
   { name: 'الخميس', absences: 4 },
   { name: 'الجمعة', absences: 2 },
-];
-
-const sectionData = [
-  { name: 'الحضانة', value: MOCK_TEACHERS.filter(t => t.section === Section.TPS).length, color: '#6366f1' },
-  { name: 'الأصغر', value: MOCK_TEACHERS.filter(t => t.section === Section.PS).length, color: '#f59e0b' },
-  { name: 'الأوسط', value: MOCK_TEACHERS.filter(t => t.section === Section.MS).length, color: '#10b981' },
-  { name: 'الأكبر', value: MOCK_TEACHERS.filter(t => t.section === Section.GS).length, color: '#ec4899' },
 ];
 
 const StatCard = ({ title, value, icon, color, trend }: { title: string, value: string | number, icon: string, color: string, trend?: string }) => {
@@ -65,27 +57,17 @@ const Dashboard: React.FC = () => {
           </h2>
           <p className="text-slate-500 dark:text-slate-400 mt-2 text-lg font-medium">أهلاً بك في غرفة القيادة. إليك ملخص أداء المؤسسة اليوم.</p>
         </div>
-        <div className="flex gap-4">
-          <div className="bg-emerald-500/10 border border-emerald-500/20 px-4 py-3 rounded-2xl flex items-center gap-3">
-             <LucideIcons.Bus className="text-emerald-500" size={20} />
-             <div>
-                <p className="text-[9px] font-black text-emerald-600 uppercase">حالة النقل</p>
-                <p className="text-xs font-bold text-slate-700 dark:text-slate-300">8 حافلات في المسار</p>
-             </div>
-          </div>
-        </div>
       </header>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <StatCard title="المعلمات المتواجدات" value={`${presentToday}/48`} icon="Users" color="text-indigo-600" trend="+4%" />
         <StatCard title="إجمالي الأطفال" value={totalStudents} icon="Baby" color="text-amber-500" trend="+2%" />
         <StatCard title="غيابات الأطفال" value="24" icon="AlertCircle" color="text-rose-500" trend="-1.2%" />
-        <StatCard title="أطفال النقل" value="340" icon="Bus" color="text-emerald-500" trend="+5%" />
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <div className="lg:col-span-2 space-y-8">
-          <div className="bg-white dark:bg-slate-900 p-10 rounded-[2.5rem] border border-slate-200 dark:border-slate-800 shadow-sm">
+          <div className="bg-white dark:bg-slate-900 p-10 rounded-[2.5rem] border border-slate-200 dark:border-slate-800 shadow-sm h-full">
             <div className="flex items-center justify-between mb-10">
               <h3 className="text-xl font-black flex items-center gap-3 text-slate-900 dark:text-slate-100 font-display">
                 <div className="p-2 bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600 rounded-lg">
@@ -94,7 +76,7 @@ const Dashboard: React.FC = () => {
                 إحصائيات الحضور الأسبوعية
               </h3>
             </div>
-            <div className="h-72">
+            <div className="h-96">
               <ResponsiveContainer width="100%" height="100%">
                 <AreaChart data={dataAbsences}>
                   <defs>
@@ -114,21 +96,6 @@ const Dashboard: React.FC = () => {
               </ResponsiveContainer>
             </div>
           </div>
-
-          <div className="bg-gradient-to-r from-amber-500 to-amber-600 p-8 rounded-[2.5rem] text-white flex items-center justify-between shadow-xl relative overflow-hidden group">
-             <LucideIcons.Utensils className="absolute -bottom-4 -left-4 w-32 h-32 text-white/10 group-hover:scale-110 transition-transform" />
-             <div className="relative z-10">
-                <h4 className="text-[10px] font-black uppercase tracking-widest opacity-80 mb-1">غداء اليوم</h4>
-                <p className="text-2xl font-black font-display">كسكس مغربي بالخضر والدجاج</p>
-                <div className="flex gap-4 mt-3">
-                   <span className="text-[10px] font-bold bg-white/20 px-3 py-1 rounded-full flex items-center gap-1"><LucideIcons.Check size={12}/> متوازن</span>
-                   <span className="text-[10px] font-bold bg-white/20 px-3 py-1 rounded-full flex items-center gap-1"><LucideIcons.AlertCircle size={12}/> انتباه للحساسية</span>
-                </div>
-             </div>
-             <button className="relative z-10 p-4 bg-white/20 hover:bg-white/30 rounded-2xl transition-all">
-                <LucideIcons.ChevronLeft size={24} />
-             </button>
-          </div>
         </div>
 
         <div className="bg-white dark:bg-slate-900 p-10 rounded-[2.5rem] border border-slate-200 dark:border-slate-800 shadow-sm flex flex-col h-full">
@@ -139,7 +106,7 @@ const Dashboard: React.FC = () => {
              آخر اللحظات
           </h3>
           <div className="space-y-6 flex-1 overflow-y-auto pr-2 scrollbar-hide">
-            {[1, 2, 3].map(i => (
+            {[1, 2, 3, 4, 5].map(i => (
               <div key={i} className="flex gap-4 group cursor-pointer">
                  <img src={`https://picsum.photos/seed/moment${i}/100/100`} className="w-16 h-16 rounded-2xl object-cover shadow-sm group-hover:scale-105 transition-transform" alt="" />
                  <div className="flex-1 overflow-hidden">

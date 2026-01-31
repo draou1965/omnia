@@ -13,13 +13,13 @@ const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab }) => {
     <aside className="w-80 glass-panel border-l border-white/20 dark:border-slate-800/30 flex flex-col h-screen sticky top-0 z-50 transition-all duration-500 overflow-hidden shadow-2xl">
       <div className="p-12">
         <div className="flex items-center gap-5 group cursor-pointer relative">
-          <div className="absolute -inset-4 bg-indigo-500/20 rounded-[2.5rem] opacity-0 group-hover:opacity-100 blur-2xl transition-all duration-700"></div>
-          <div className="bg-gradient-to-br from-indigo-600 to-indigo-900 p-4 rounded-[1.8rem] text-white shadow-2xl shadow-indigo-200 dark:shadow-none group-hover:rotate-6 transition-all duration-500 relative z-10">
+          <div className="absolute -inset-4 bg-emerald-500/20 rounded-[2.5rem] opacity-0 group-hover:opacity-100 blur-2xl transition-all duration-700"></div>
+          <div className="bg-gradient-to-br from-sky-400 to-emerald-500 p-4 rounded-[1.8rem] text-white shadow-2xl shadow-emerald-100 dark:shadow-none group-hover:rotate-6 transition-all duration-500 relative z-10">
             <LucideIcons.GraduationCap size={36} />
           </div>
           <div className="flex flex-col relative z-10 overflow-hidden">
             <h1 className="font-black text-2xl tracking-tighter text-slate-900 dark:text-slate-100 font-display leading-tight">جمعية الأمنية</h1>
-            <span className="text-[10px] text-indigo-600 dark:text-indigo-400 font-black uppercase tracking-[0.4em] mt-2">الإصدار الذكي</span>
+            <span className="text-[10px] text-emerald-600 dark:text-emerald-400 font-black uppercase tracking-[0.4em] mt-2">الإصدار الذكي</span>
           </div>
         </div>
       </div>

@@ -58,11 +58,9 @@ export const SCHOOL_NAV_ITEMS = [
   { id: 'dashboard', label: 'لوحة التحكم', icon: 'LayoutDashboard' },
   { id: 'attendance', label: 'تسجيل الحضور', icon: 'UserCheck' },
   { id: 'journal', label: 'مجلة الأنشطة', icon: 'Camera' },
-  { id: 'meals', label: 'التغذية والوجبات', icon: 'Utensils' },
-  { id: 'performance', label: 'تقييم الأداء', icon: 'Trophy' }, // إضافة جديدة
+  { id: 'performance', label: 'تقييم الأداء', icon: 'Trophy' },
   { id: 'teachers', label: 'المعلمات (48)', icon: 'Users' },
   { id: 'students', label: 'لائحة الأطفال', icon: 'Baby' },
-  { id: 'transport', label: 'النقل المدرسي', icon: 'Bus' },
   { id: 'inventory', label: 'المخزون واللوازم', icon: 'Package' },
   { id: 'assessment-grid', label: 'شبكة التقييم التربوي', icon: 'ClipboardCheck' },
   { id: 'finance', label: 'التسيير المالي', icon: 'Wallet' },

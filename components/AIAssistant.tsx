@@ -10,7 +10,8 @@ const AIAssistant: React.FC = () => {
       id: '1',
       role: 'assistant',
       content: "مرحباً بك! أنا مساعدك الذكي المتخصص في الشؤون التربوية. يمكنني مساعدتك في صياغة رسائل للأهل، تقديم استشارات بيداغوجية، أو تنظيم فعاليات الروضة. كيف يمكنني خدمتك اليوم؟",
-      timestamp: new Date()
+      timestamp: new Date(),
+      status: 'read'
     }
   ]);
   const [input, setInput] = useState('');
@@ -19,31 +20,45 @@ const AIAssistant: React.FC = () => {
 
   useEffect(() => {
     if (scrollRef.current) {
-      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+      scrollRef.current.scrollTo({
+        top: scrollRef.current.scrollHeight,
+        behavior: 'smooth'
+      });
     }
-  }, [messages]);
+  }, [messages, isLoading]);
 
   const handleSend = async () => {
     if (!input.trim() || isLoading) return;
 
+    const userMsgId = Date.now().toString();
     const userMsg: Message = {
-      id: Date.now().toString(),
+      id: userMsgId,
       role: 'user',
       content: input,
-      timestamp: new Date()
+      timestamp: new Date(),
+      status: 'sent'
     };
 
     setMessages(prev => [...prev, userMsg]);
     setInput('');
     setIsLoading(true);
 
+    // Simulate "delivered" status after a short delay
+    setTimeout(() => {
+      setMessages(prev => prev.map(m => m.id === userMsgId ? { ...m, status: 'delivered' } : m));
+    }, 500);
+
     const response = await generatePedagogicalResponse(input);
     
+    // Simulate "read" status right before assistant replies
+    setMessages(prev => prev.map(m => m.id === userMsgId ? { ...m, status: 'read' } : m));
+
     const assistantMsg: Message = {
       id: (Date.now() + 1).toString(),
       role: 'assistant',
       content: response || "عذراً، لم أتمكن من توليد إجابة حالياً. يرجى المحاولة لاحقاً.",
-      timestamp: new Date()
+      timestamp: new Date(),
+      status: 'read'
     };
 
     setMessages(prev => [...prev, assistantMsg]);
@@ -56,6 +71,21 @@ const AIAssistant: React.FC = () => {
     "أفكار لليوم الوطني للطفل",
     "جدول أعمال اجتماع بيداغوجي"
   ];
+
+  const renderStatus = (msg: Message) => {
+    if (msg.role === 'assistant') return null;
+    
+    switch (msg.status) {
+      case 'sent':
+        return <LucideIcons.Check size={12} className="text-slate-300" />;
+      case 'delivered':
+        return <LucideIcons.CheckCheck size={12} className="text-slate-300" />;
+      case 'read':
+        return <LucideIcons.CheckCheck size={12} className="text-indigo-400" />;
+      default:
+        return null;
+    }
+  };
 
   return (
     <div className="h-[calc(100vh-12rem)] flex flex-col bg-white dark:bg-slate-900 rounded-[3rem] border border-slate-200 dark:border-slate-800 shadow-2xl shadow-indigo-100/10 dark:shadow-none overflow-hidden animate-in">
@@ -82,29 +112,31 @@ const AIAssistant: React.FC = () => {
         {messages.map((m) => (
           <div key={m.id} className={`flex ${m.role === 'user' ? 'justify-start' : 'justify-end animate-in'}`}>
             <div className={`max-w-[85%] relative group ${m.role === 'user' ? 'order-1' : 'order-2'}`}>
-              <div className={`p-6 rounded-[2rem] shadow-xl ${
+              <div className={`p-6 rounded-[2.5rem] shadow-xl ${
                 m.role === 'user' 
                   ? 'bg-indigo-600 text-white rounded-tl-none shadow-indigo-100 dark:shadow-none' 
                   : 'bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-200 rounded-tr-none border border-slate-100 dark:border-slate-700 shadow-slate-200/50 dark:shadow-none'
               }`}>
                 <p className="text-sm leading-relaxed font-medium whitespace-pre-wrap">{m.content}</p>
-                <div className={`flex items-center gap-2 mt-4 opacity-50 ${m.role === 'user' ? 'justify-start' : 'justify-end'}`}>
+                <div className={`flex items-center gap-2 mt-4 opacity-70 ${m.role === 'user' ? 'justify-start' : 'justify-end'}`}>
                    <span className="text-[10px] font-black uppercase tracking-widest">
                      {m.timestamp.toLocaleTimeString('ar-MA', { hour: '2-digit', minute: '2-digit' })}
                    </span>
-                   {m.role === 'assistant' && <LucideIcons.CheckCheck size={14} className="text-indigo-500" />}
+                   {renderStatus(m)}
                 </div>
               </div>
             </div>
           </div>
         ))}
         {isLoading && (
-          <div className="flex justify-end">
-            <div className="bg-white dark:bg-slate-800 rounded-[2rem] rounded-tr-none p-6 border border-slate-100 dark:border-slate-700 shadow-xl flex items-center gap-3">
-              <div className="w-2 h-2 bg-indigo-500 rounded-full animate-bounce [animation-delay:-0.3s]"></div>
-              <div className="w-2 h-2 bg-indigo-500 rounded-full animate-bounce [animation-delay:-0.15s]"></div>
-              <div className="w-2 h-2 bg-indigo-500 rounded-full animate-bounce"></div>
-              <span className="text-xs font-black text-slate-400 mr-2 uppercase tracking-widest">المساعد يفكر...</span>
+          <div className="flex justify-end animate-in fade-in duration-300">
+            <div className="bg-white dark:bg-slate-800 rounded-[2.5rem] rounded-tr-none p-6 border border-slate-100 dark:border-slate-700 shadow-xl flex items-center gap-3">
+              <div className="flex gap-1.5">
+                <div className="w-2 h-2 bg-indigo-400 rounded-full animate-bounce [animation-delay:-0.3s]"></div>
+                <div className="w-2 h-2 bg-indigo-500 rounded-full animate-bounce [animation-delay:-0.15s]"></div>
+                <div className="w-2 h-2 bg-indigo-600 rounded-full animate-bounce"></div>
+              </div>
+              <span className="text-[10px] font-black text-slate-400 mr-2 uppercase tracking-widest">المساعد يكتب الآن...</span>
             </div>
           </div>
         )}
@@ -127,7 +159,7 @@ const AIAssistant: React.FC = () => {
             <input 
               type="text" 
               placeholder="بماذا يمكنني مساعدتك اليوم؟"
-              className="w-full bg-slate-50 dark:bg-slate-800 border-2 border-transparent rounded-[1.5rem] px-6 py-4 text-sm focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 outline-none transition-all text-right dark:text-slate-100 font-bold shadow-inner"
+              className="w-full bg-slate-50 dark:bg-slate-800 border-2 border-transparent rounded-[1.5rem] px-6 py-5 text-sm focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 outline-none transition-all text-right dark:text-slate-100 font-bold shadow-inner"
               value={input}
               onChange={(e) => setInput(e.target.value)}
               onKeyPress={(e) => e.key === 'Enter' && handleSend()}
@@ -144,7 +176,7 @@ const AIAssistant: React.FC = () => {
           <button 
             onClick={handleSend}
             disabled={isLoading || !input.trim()}
-            className="bg-indigo-600 text-white p-5 rounded-[1.5rem] hover:bg-indigo-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-xl shadow-indigo-200 dark:shadow-none hover:scale-105 active:scale-95"
+            className="bg-indigo-600 text-white p-5 rounded-[1.8rem] hover:bg-indigo-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-xl shadow-indigo-200 dark:shadow-none hover:scale-105 active:scale-95"
           >
             <LucideIcons.Send size={24} className="transform rotate-180" />
           </button>

@@ -10,11 +10,9 @@ import Messaging from './components/Messaging';
 import Calendar from './components/Calendar';
 import Finance from './components/Finance';
 import Attendance from './components/Attendance';
-import Transport from './components/Transport';
 import Inventory from './components/Inventory';
 import SchoolJournal from './components/SchoolJournal';
-import MealPlanner from './components/MealPlanner';
-import TeacherPerformance from './components/TeacherPerformance'; // استيراد المكون الجديد
+import TeacherPerformance from './components/TeacherPerformance';
 import * as LucideIcons from 'lucide-react';
 
 const App: React.FC = () => {
@@ -51,9 +49,7 @@ const App: React.FC = () => {
       case 'dashboard': return <Dashboard />;
       case 'attendance': return <Attendance />;
       case 'journal': return <SchoolJournal />;
-      case 'meals': return <MealPlanner />;
-      case 'performance': return <TeacherPerformance />; // عرض تقييم الأداء
-      case 'transport': return <Transport />;
+      case 'performance': return <TeacherPerformance />;
       case 'inventory': return <Inventory />;
       case 'teachers': return (
         <TeacherList 

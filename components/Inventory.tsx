@@ -6,7 +6,7 @@ import * as XLSX from 'xlsx';
 interface InventoryItem {
   id: string;
   name: string;
-  category: 'stationery' | 'cleaning' | 'toys' | 'food' | 'other';
+  category: 'stationery' | 'cleaning' | 'toys' | 'other';
   currentStock: number;
   minThreshold: number;
   unit: string;
@@ -19,14 +19,12 @@ const INITIAL_INVENTORY: InventoryItem[] = [
   { id: 'inv3', name: 'صابون سائل للأطفال (5L)', category: 'cleaning', currentStock: 15, minThreshold: 5, unit: 'قارورة', lastUpdated: '2024-03-10' },
   { id: 'inv4', name: 'عجين اللعب (صلصال)', category: 'toys', currentStock: 60, minThreshold: 15, unit: 'وحدة', lastUpdated: '2024-03-12' },
   { id: 'inv5', name: 'مناديل ورقية (عبوة)', category: 'cleaning', currentStock: 4, minThreshold: 12, unit: 'عبوة', lastUpdated: '2024-03-14' },
-  { id: 'inv6', name: 'حليب أطفال (علبة 1L)', category: 'food', currentStock: 30, minThreshold: 10, unit: 'علبة', lastUpdated: '2024-03-15' },
 ];
 
 const CATEGORY_LABELS = {
   stationery: 'أدوات مدرسية',
   cleaning: 'مواد تنظيف',
   toys: 'ألعاب تربوية',
-  food: 'تغذية',
   other: 'أخرى'
 };
 
@@ -169,7 +167,7 @@ const Inventory: React.FC = () => {
                     {item.category === 'stationery' && <LucideIcons.Pencil size={24} />}
                     {item.category === 'cleaning' && <LucideIcons.Waves size={24} />}
                     {item.category === 'toys' && <LucideIcons.Gamepad2 size={24} />}
-                    {item.category === 'food' && <LucideIcons.Apple size={24} />}
+                    {item.category === 'other' && <LucideIcons.Package size={24} />}
                   </div>
                   {isLow && (
                     <div className="flex items-center gap-1 text-[9px] font-black text-rose-600 bg-rose-50 px-2 py-1 rounded-lg animate-pulse">

@@ -1,9 +1,9 @@
 
 import { GoogleGenAI } from "@google/genai";
+import { CompetencyAssessment, AssessmentStatus } from "../types";
 
 // Pedagogical assistant service for kindergarten management
 export const generatePedagogicalResponse = async (prompt: string, context?: string) => {
-  // Always initialize GoogleGenAI with a named parameter for the API key from process.env.API_KEY
   const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
   
   const systemInstruction = `
@@ -21,7 +21,6 @@ export const generatePedagogicalResponse = async (prompt: string, context?: stri
   `;
 
   try {
-    // Using gemini-3-flash-preview for general pedagogical text tasks
     const response = await ai.models.generateContent({
       model: "gemini-3-flash-preview",
       contents: prompt,
@@ -30,10 +29,46 @@ export const generatePedagogicalResponse = async (prompt: string, context?: stri
         temperature: 0.7,
       },
     });
-    // Direct access to the .text property of GenerateContentResponse
     return response.text;
   } catch (error) {
     console.error("Gemini API Error:", error);
     return "عذراً، أواجه صعوبة تقنية في توليد الإجابة. يرجى المحاولة لاحقاً.";
+  }
+};
+
+export const generateStudentReportComment = async (studentName: string, section: string, assessments: CompetencyAssessment) => {
+  const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+
+  const statusMap: Record<AssessmentStatus, string> = {
+    acquired: "مكتسب",
+    ongoing: "في طور الاكتساب",
+    not_acquired: "غير مكتسب بعد"
+  };
+
+  const context = `
+    اسم الطفل: ${studentName}
+    المستوى: ${section}
+    النتائج الحالية:
+    - اللغة والتواصل: ${statusMap[assessments.language]}
+    - المنطق والرياضيات: ${statusMap[assessments.math]}
+    - السلوك والقيم: ${statusMap[assessments.social]}
+    - الحس-حركي: ${statusMap[assessments.motor]}
+    - التعبير الفني: ${statusMap[assessments.art]}
+  `;
+
+  const prompt = `بناءً على النتائج أعلاه، اكتب ملاحظة تربوية موجزة (3-4 جمل) لولي الأمر تصف تطور الطفل ونقاط القوة مع نصيحة بسيطة للبيت. استخدم لغة مشجعة ومهنية باللغة العربية.`;
+
+  try {
+    const response = await ai.models.generateContent({
+      model: "gemini-3-flash-preview",
+      contents: prompt,
+      config: {
+        systemInstruction: "أنت مستشار تربوي متخصص في التعليم الأولي. هدفك كتابة ملاحظات دقيقة ومشجعة لنتائج الدورة الدراسية.",
+        temperature: 0.5,
+      },
+    });
+    return response.text;
+  } catch (error) {
+    return "يظهر الطفل مجهوداً طيباً في أنشطة الفصل، ونوصي بالاستمرار في تشجيعه بالمنزل.";
   }
 };

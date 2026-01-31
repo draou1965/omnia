@@ -18,8 +18,8 @@ interface Transaction {
 }
 
 const FINANCE_CATEGORIES = {
-  income: ["رسوم التسجيل", "الواجبات الشهرية", "النقل المدرسي", "التأمين", "أنشطة موازية", "أخرى"],
-  expense: ["رواتب الموظفين", "كراء المقر", "فواتير (ماء/كهرباء)", "أدوات تعليمية", "صيانة", "تغذية", "نظافة", "أخرى"]
+  income: ["رسوم التسجيل", "الواجبات الشهرية", "التأمين", "أنشطة موازية", "أخرى"],
+  expense: ["رواتب الموظفين", "كراء المقر", "فواتير (ماء/كهرباء)", "أدوات تعليمية", "صيانة", "نظافة", "أخرى"]
 };
 
 const MOCK_TRANSACTIONS: Transaction[] = [
@@ -27,7 +27,6 @@ const MOCK_TRANSACTIONS: Transaction[] = [
   { id: 'tr2', title: 'رواتب المربيات (دفع جزئي)', amount: 144000, type: 'expense', category: 'رواتب الموظفين', date: new Date(Date.now() - 86400000 * 1) },
   { id: 'tr3', title: 'فواتير الماء والكهرباء', amount: 3200, type: 'expense', category: 'فواتير (ماء/كهرباء)', date: new Date() },
   { id: 'tr4', title: 'مستلزمات أنشطة تربوية', amount: 8500, type: 'expense', category: 'أدوات تعليمية', date: new Date() },
-  { id: 'tr5', title: 'واجبات النقل المدرسي', amount: 12000, type: 'income', category: 'النقل المدرسي', date: new Date(Date.now() - 86400000 * 5) },
 ];
 
 const chartData = [
@@ -47,7 +46,6 @@ const Finance: React.FC = () => {
   const [filterType, setFilterType] = useState<'all' | 'income' | 'expense'>('all');
   const [showModal, setShowModal] = useState(false);
   const [salarySearch, setSalarySearch] = useState('');
-  const fileInputRef = useRef<HTMLInputElement>(null);
   
   const [newTx, setNewTx] = useState<Partial<Transaction>>({
     type: 'income',
@@ -85,7 +83,6 @@ const Finance: React.FC = () => {
 
     setTransactions([transaction, ...transactions]);
     
-    // إذا كانت دفعة راتب، نقوم بتحديث حالة المعلمة
     if (newTx.teacherId) {
       setTeachers(prev => prev.map(t => 
         t.id === newTx.teacherId 
@@ -133,7 +130,7 @@ const Finance: React.FC = () => {
       <header className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <h2 className="text-3xl font-bold text-slate-900 dark:text-slate-100 font-display">التسيير المالي</h2>
-          <p className="text-slate-500 dark:text-slate-400">مراقبة دقيقة للتدفقات ورواتب 48 معلمة.</p>
+          <p className="text-slate-500 dark:text-slate-400">مراقبة دقيقة للتدفقات ورواتب المعلمات.</p>
         </div>
         <div className="flex flex-wrap gap-2">
           <button 
@@ -199,22 +196,12 @@ const Finance: React.FC = () => {
               <div className="h-72">
                 <ResponsiveContainer width="100%" height="100%">
                   <AreaChart data={chartData}>
-                    <defs>
-                      <linearGradient id="incGrad" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="5%" stopColor="#10b981" stopOpacity={0.1}/>
-                        <stop offset="95%" stopColor="#10b981" stopOpacity={0}/>
-                      </linearGradient>
-                      <linearGradient id="expGrad" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="5%" stopColor="#f43f5e" stopOpacity={0.1}/>
-                        <stop offset="95%" stopColor="#f43f5e" stopOpacity={0}/>
-                      </linearGradient>
-                    </defs>
                     <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" className="dark:opacity-10" />
                     <XAxis dataKey="name" axisLine={false} tickLine={false} style={{ fontSize: '12px', fill: '#94a3b8' }} />
                     <YAxis axisLine={false} tickLine={false} orientation="right" style={{ fontSize: '12px', fill: '#94a3b8' }} />
                     <Tooltip contentStyle={{ borderRadius: '16px', border: 'none', backgroundColor: '#1e293b', color: '#fff' }} />
-                    <Area type="monotone" dataKey="income" stroke="#10b981" strokeWidth={3} fillOpacity={1} fill="url(#incGrad)" name="مداخيل" />
-                    <Area type="monotone" dataKey="expense" stroke="#f43f5e" strokeWidth={3} fillOpacity={1} fill="url(#expGrad)" name="مصاريف" />
+                    <Area type="monotone" dataKey="income" stroke="#10b981" strokeWidth={3} fillOpacity={1} name="مداخيل" />
+                    <Area type="monotone" dataKey="expense" stroke="#f43f5e" strokeWidth={3} fillOpacity={1} name="مصاريف" />
                   </AreaChart>
                 </ResponsiveContainer>
               </div>
@@ -227,9 +214,9 @@ const Finance: React.FC = () => {
               </h3>
               <div className="space-y-5">
                 {[
-                  { label: 'رواتب المعلمات', amount: teachers.reduce((acc, t) => acc + t.paidAmount, 0), percentage: 65, color: 'bg-indigo-500' },
+                  { label: 'رواتب المعلمات', amount: teachers.reduce((acc, t) => acc + t.paidAmount, 0), percentage: 75, color: 'bg-indigo-500' },
                   { label: 'كراء وفواتير', amount: 32000, percentage: 15, color: 'bg-amber-500' },
-                  { label: 'أدوات تعليمية', amount: 8500, percentage: 8, color: 'bg-emerald-500' },
+                  { label: 'أدوات تعليمية', amount: 8500, percentage: 10, color: 'bg-emerald-500' },
                 ].map((cat) => (
                   <div key={cat.label} className="group cursor-default">
                     <div className="flex justify-between items-end mb-1.5">
@@ -260,28 +247,7 @@ const Finance: React.FC = () => {
                 <p className="text-[10px] text-slate-400 uppercase tracking-widest">تتبع الأجر المحصل والباقي لـ 48 معلمة</p>
               </div>
             </div>
-            
-            <div className="flex gap-3">
-              <div className="relative">
-                <LucideIcons.Search className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400" size={16} />
-                <input 
-                  type="text" 
-                  placeholder="بحث عن معلمة..."
-                  className="pr-9 pl-4 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-700 rounded-xl text-xs outline-none w-48 focus:ring-2 focus:ring-indigo-500"
-                  value={salarySearch}
-                  onChange={(e) => setSalarySearch(e.target.value)}
-                />
-              </div>
-              <button 
-                onClick={exportSalariesToExcel}
-                className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 rounded-xl font-bold hover:bg-slate-50 shadow-sm transition-all"
-              >
-                <LucideIcons.FileDown size={16} />
-                تصدير
-              </button>
-            </div>
           </div>
-          
           <div className="overflow-x-auto">
             <table className="w-full text-right">
               <thead>
@@ -290,7 +256,6 @@ const Finance: React.FC = () => {
                   <th className="px-6 py-4">الراتب المتفق عليه</th>
                   <th className="px-6 py-4">الأجرة المحصلة</th>
                   <th className="px-6 py-4">الباقي من الأجر</th>
-                  <th className="px-6 py-4">الحالة</th>
                   <th className="px-6 py-4 text-center">إجراء</th>
                 </tr>
               </thead>
@@ -298,8 +263,6 @@ const Finance: React.FC = () => {
                 {filteredTeachers.map((teacher) => {
                   const remaining = teacher.monthlySalary - teacher.paidAmount;
                   const isPaid = remaining <= 0;
-                  const isPartial = teacher.paidAmount > 0 && remaining > 0;
-                  
                   return (
                     <tr key={teacher.id} className="hover:bg-slate-50/50 dark:hover:bg-slate-800/30 transition-colors group">
                       <td className="px-6 py-4">
@@ -316,21 +279,11 @@ const Finance: React.FC = () => {
                       <td className={`px-6 py-4 font-black ${remaining > 0 ? 'text-amber-600 dark:text-amber-400' : 'text-slate-400'}`}>
                         {remaining.toLocaleString()} د.م
                       </td>
-                      <td className="px-6 py-4">
-                        <span className={`px-2 py-1 rounded-full text-[9px] font-black ${
-                          isPaid ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400' :
-                          isPartial ? 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400' :
-                          'bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-400'
-                        }`}>
-                          {isPaid ? 'مكتمل' : isPartial ? 'جزئي' : 'غير مدفوع'}
-                        </span>
-                      </td>
                       <td className="px-6 py-4 text-center">
                         {!isPaid && (
                           <button 
                             onClick={() => handleQuickPay(teacher)}
                             className="p-2 bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600 dark:text-indigo-400 rounded-lg hover:bg-indigo-600 hover:text-white transition-all"
-                            title="تسجيل دفعة"
                           >
                             <LucideIcons.BadgeDollarSign size={18} />
                           </button>
@@ -341,134 +294,6 @@ const Finance: React.FC = () => {
                 })}
               </tbody>
             </table>
-          </div>
-        </div>
-      )}
-
-      {/* سجل العمليات العام */}
-      {activeSubTab === 'overview' && (
-        <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden">
-          <div className="p-6 border-b border-slate-50 dark:border-slate-800 flex flex-col md:flex-row md:items-center justify-between gap-4">
-            <h3 className="font-bold text-slate-900 dark:text-slate-100 font-display">آخر العمليات المالية</h3>
-            <div className="flex gap-2 p-1 bg-slate-100 dark:bg-slate-800 rounded-xl">
-              {(['all', 'income', 'expense'] as const).map((t) => (
-                <button
-                  key={t}
-                  onClick={() => setFilterType(t)}
-                  className={`px-4 py-1.5 rounded-lg text-xs font-bold transition-all ${
-                    filterType === t ? 'bg-white dark:bg-slate-700 text-indigo-600 dark:text-indigo-400 shadow-sm' : 'text-slate-500'
-                  }`}
-                >
-                  {t === 'all' ? 'الكل' : t === 'income' ? 'مداخيل' : 'مصاريف'}
-                </button>
-              ))}
-            </div>
-          </div>
-          <div className="overflow-x-auto">
-            <table className="w-full text-right">
-              <thead className="bg-slate-50/50 dark:bg-slate-800/50 text-[10px] font-black text-slate-400 border-b border-slate-100 dark:border-slate-800">
-                <tr>
-                  <th className="px-6 py-4">العملية / التصنيف</th>
-                  <th className="px-6 py-4">التاريخ</th>
-                  <th className="px-6 py-4 text-left">المبلغ</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-50 dark:divide-slate-800/50">
-                {filteredTransactions.map((tr) => (
-                  <tr key={tr.id} className="hover:bg-slate-50/50 dark:hover:bg-slate-800/30 transition-colors">
-                    <td className="px-6 py-4 flex items-center gap-3">
-                      <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${tr.type === 'income' ? 'bg-emerald-50 text-emerald-600' : 'bg-rose-50 text-rose-600'}`}>
-                        {tr.type === 'income' ? <LucideIcons.ArrowDownLeft size={16} /> : <LucideIcons.ArrowUpRight size={16} />}
-                      </div>
-                      <div className="flex flex-col">
-                        <span className="text-sm font-bold text-slate-800 dark:text-slate-200">{tr.title}</span>
-                        <span className="text-[9px] text-slate-400 font-bold">{tr.category}</span>
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 text-xs font-bold text-slate-500">{tr.date.toLocaleDateString('ar-MA')}</td>
-                    <td className={`px-6 py-4 font-black text-sm text-left ${tr.type === 'income' ? 'text-emerald-600' : 'text-rose-600'}`}>
-                      {tr.type === 'income' ? '+' : '-'}{tr.amount.toLocaleString()} د.م
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
-      )}
-
-      {/* مودال إضافة عملية مالية */}
-      {showModal && (
-        <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-[100] flex items-center justify-center p-4">
-          <div className="bg-white dark:bg-slate-900 rounded-3xl w-full max-w-lg shadow-2xl animate-in zoom-in-95 duration-200 overflow-hidden">
-            <header className="p-6 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between">
-              <h3 className="text-xl font-bold text-slate-900 dark:text-slate-100 font-display">تسجيل عملية مالية</h3>
-              <button onClick={() => setShowModal(false)} className="text-slate-400 hover:text-slate-600 transition-colors">
-                <LucideIcons.X size={20} />
-              </button>
-            </header>
-            
-            <div className="p-6 space-y-5">
-              <div className="flex p-1 bg-slate-100 dark:bg-slate-800 rounded-2xl">
-                <button 
-                  onClick={() => setNewTx({ ...newTx, type: 'income', category: FINANCE_CATEGORIES.income[0], teacherId: undefined })}
-                  className={`flex-1 py-2.5 rounded-xl text-xs font-bold transition-all ${newTx.type === 'income' ? 'bg-white dark:bg-slate-700 text-emerald-600 shadow-sm' : 'text-slate-500'}`}
-                >
-                  مدخول
-                </button>
-                <button 
-                  onClick={() => setNewTx({ ...newTx, type: 'expense', category: FINANCE_CATEGORIES.expense[0] })}
-                  className={`flex-1 py-2.5 rounded-xl text-xs font-bold transition-all ${newTx.type === 'expense' ? 'bg-white dark:bg-slate-700 text-rose-600 shadow-sm' : 'text-slate-500'}`}
-                >
-                  مصروف
-                </button>
-              </div>
-
-              <div>
-                <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest block mb-2">العنوان</label>
-                <input 
-                  type="text" 
-                  className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-indigo-500 dark:text-slate-100"
-                  value={newTx.title || ''}
-                  onChange={(e) => setNewTx({ ...newTx, title: e.target.value })}
-                />
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest block mb-2">المبلغ (د.م)</label>
-                  <input 
-                    type="number" 
-                    className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-indigo-500 dark:text-slate-100 font-bold"
-                    value={newTx.amount || ''}
-                    onChange={(e) => setNewTx({ ...newTx, amount: Number(e.target.value) })}
-                  />
-                </div>
-                <div>
-                  <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest block mb-2">التصنيف</label>
-                  <select 
-                    className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-indigo-500 dark:text-slate-100"
-                    value={newTx.category}
-                    onChange={(e) => setNewTx({ ...newTx, category: e.target.value })}
-                  >
-                    {FINANCE_CATEGORIES[newTx.type as 'income' | 'expense'].map(cat => (
-                      <option key={cat} value={cat}>{cat}</option>
-                    ))}
-                  </select>
-                </div>
-              </div>
-            </div>
-
-            <div className="p-6 bg-slate-50 dark:bg-slate-800/50 flex items-center justify-end gap-3">
-              <button onClick={() => setShowModal(false)} className="px-6 py-2.5 text-sm font-bold text-slate-500">إلغاء</button>
-              <button 
-                onClick={handleAddTransaction}
-                disabled={!newTx.title || !newTx.amount}
-                className="px-8 py-2.5 bg-indigo-600 text-white rounded-xl font-bold hover:bg-indigo-700 disabled:opacity-50"
-              >
-                حفظ العملية
-              </button>
-            </div>
           </div>
         </div>
       )}
